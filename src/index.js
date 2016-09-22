@@ -1,3 +1,3 @@
-export const workpop = 'WORKPOP';
+const workpop = 'WORKPOP';
 
-
+export default workpop;
