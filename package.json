@@ -1,5 +1,5 @@
 {
-  "name": "workpop-base",
+  "name": "base",
   "version": "1.0.0",
   "description": "A base NPM Module for writing Workpop Modules",
   "main": "dist/index.js",
