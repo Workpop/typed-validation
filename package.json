@@ -35,12 +35,6 @@
   "pre-commit": [
     "lint"
   ],
-  "eslintConfig": {
-    "extends": [
-      "@workpop/eslint-config-workpop",
-      "plugin:import/errors"
-    ]
-  },
   "author": "Workpop",
   "license": "ISC"
 }
