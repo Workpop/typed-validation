@@ -36,7 +36,6 @@
     "lint"
   ],
   "eslintConfig": {
-    "parser": "babel-eslint",
     "extends": [
       "@workpop/eslint-config-workpop",
       "plugin:import/errors"
