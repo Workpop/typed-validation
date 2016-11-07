@@ -1,6 +1,6 @@
 {
   "name": "@workpop/typed-validation",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "JS Value Validation via GraphQL Types",
   "main": "dist/index.js",
   "directories": {
