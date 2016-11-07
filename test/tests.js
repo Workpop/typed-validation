@@ -1,1 +1,1 @@
-import './example.spec';
+import './validation.spec';
