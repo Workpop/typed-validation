@@ -186,7 +186,7 @@ describe('Tests', function () {
     expect(invalidKeys.length).to.eql(0);
   });
 
-    it('Key Error Message - should be able to retrieve error message for specific key', function () {
+  it('Key Error Message - should be able to retrieve error message for specific key', function () {
     const validatingTypes = `
       input ValidatingTypes {    
         num: String
