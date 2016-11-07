@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import TypedValidator from '../src';
 import { first, isArray } from 'lodash';
+import TypedValidator from '../src';
 
 
 describe('Tests', function () {
@@ -9,11 +9,11 @@ describe('Tests', function () {
       input ValidateOneType {
         title: String    
       }
-    `
+    `;
 
     const testObject = {
       title: 'Yo!',
-    }
+    };
 
     const Validator = new TypedValidator(validateOneType);
 
@@ -27,27 +27,11 @@ describe('Tests', function () {
       input ValidateOneType {
         title: String    
       }
-    `
+    `;
 
     const testObject = {
       title: 'Yo!',
-    }
-
-    const Validator = new TypedValidator(validateOneType);
-
-    expect(Validator.validateOne.bind(testObject)).to.throw();
-  });
-  
-  it('validateOne - Should throw key provided is not in Type', function () {
-    const validateOneType = `
-      input ValidateOneType {
-        title: String    
-      }
-    `
-
-    const testObject = {
-      foobar: 'Yo!',
-    }
+    };
 
     const Validator = new TypedValidator(validateOneType);
 
@@ -60,11 +44,11 @@ describe('Tests', function () {
         title: String   
         age: Int 
       }
-    `
+    `;
 
     const testObject = {
       title: 'Yo!',
-    }
+    };
 
     const Validator = new TypedValidator(validateAllType);
 
@@ -84,14 +68,14 @@ describe('Tests', function () {
       input ValidateOneType {
         title: User    
       }
-    `
+    `;
 
     const testObject = {
       title: {
         id: 'Yo!',
         name: 1,
       },
-    }
+    };
 
     const Validator = new TypedValidator(validateOneType);
 
@@ -110,7 +94,7 @@ describe('Tests', function () {
         createdAt: DateType
         phone: PhoneType
       }
-    `
+    `;
 
     const testObject = {
       title: 'Yo!',
@@ -119,7 +103,7 @@ describe('Tests', function () {
       subscribed: false,
       createdAt: new Date(),
       phone: '(909) 456-4319',
-    }
+    };
 
     const Validator = new TypedValidator(validatingTypes);
 
@@ -143,11 +127,11 @@ describe('Tests', function () {
       input ValidatingTypes {    
         num: String
       }
-    `
+    `;
 
     const testObject = {
       num: 1,
-    }
+    };
 
     const Validator = new TypedValidator(validatingTypes);
 
@@ -171,7 +155,7 @@ describe('Tests', function () {
     };
 
     const correctType = {
-      num: '1'
+      num: '1',
     };
 
     const Validator = new TypedValidator(validatingTypes);
@@ -193,14 +177,14 @@ describe('Tests', function () {
       }
     `;
 
-    let testObject = {
+    const testObject = {
       num: 1,
     };
 
     const Validator = new TypedValidator(validatingTypes);
 
     Validator.validate(testObject);
-  
+
     expect(Validator.keyErrorMessage('num')).not.to.be.undefined;
   });
 
@@ -211,14 +195,14 @@ describe('Tests', function () {
       }
     `;
 
-    let testObject = {
+    const testObject = {
       num: '1',
       foo: 'bar',
     };
 
     const Validator = new TypedValidator(validatingTypes);
 
-    Validator.clean(testObject)
+    Validator.clean(testObject);
 
     expect(Validator.clean(testObject)).to.eql({
       num: '1',

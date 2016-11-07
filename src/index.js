@@ -1,5 +1,5 @@
 import gql from 'graphql-tag';
-import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isDate, isUndefined, isBoolean, pickBy } from 'lodash';
+import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isDate, isBoolean, pickBy } from 'lodash';
 
 export default class TypedValidator {
   constructor(type) {
@@ -156,10 +156,6 @@ export default class TypedValidator {
     }
 
     const fieldValue = get(obj, key);
-
-    if (isUndefined(fieldValue)) {
-      throw new Error('Field must exist in provided object to validate');
-    }
 
     const fieldType = this._fieldTypeForValidation(key);
     const isValid = this._validateField(fieldValue, get(fieldType, key));
