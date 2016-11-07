@@ -4,6 +4,29 @@ import TypedValidator from '../src';
 
 
 describe('Tests', function () {
+  it('customMessages - Should display custom message for key', function () {
+    const validateOneType = `
+      input ValidateOneType {
+        title: String    
+      }
+    `;
+
+    const testObject = {
+      title: 1,
+    };
+
+    const customMessages = {
+      title: 'You must enter a title, it is required',
+    };
+
+    const Validator = new TypedValidator(validateOneType, { customMessages });
+    Validator.validateOne(testObject, 'title');
+
+    const errorMessage = Validator.keyErrorMessage('title');
+
+    expect(errorMessage).to.eql(customMessages.title);
+  });
+
   it('validateOne - Should validate one key from value', function () {
     const validateOneType = `
       input ValidateOneType {
@@ -36,6 +59,26 @@ describe('Tests', function () {
     const Validator = new TypedValidator(validateOneType);
 
     expect(Validator.validateOne.bind(testObject)).to.throw();
+  });
+
+  it ('validateOne - Should return error for key that is missing from object', function () {
+    const validateAllType = `
+      input ValidateOneType {
+        title: String   
+        age: Int 
+      }
+    `;
+
+    const testObject = {
+
+    };
+
+    const Validator = new TypedValidator(validateAllType);
+    Validator.validateOne(testObject, 'title')
+
+    const keyError = Validator.keyErrorMessage('title');
+    expect(keyError).to.eql('title is required');
+
   });
 
   it('validate - Should return invalid for an object with missing keys', function () {

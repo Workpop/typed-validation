@@ -1,11 +1,12 @@
 import gql from 'graphql-tag';
-import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isDate, isBoolean, pickBy } from 'lodash';
+import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isUndefined, isDate, isBoolean, pickBy } from 'lodash';
 
 export default class TypedValidator {
-  constructor(type) {
+  constructor(type, options) {
     this.type = gql`${type}`;
     this.definitions = get(this.type, 'definitions');
     this.errors = [];
+    this.customMessages = get(options, 'customMessages') || {};
     this.validate = this.validate.bind(this);
     this.validateOne = this.validateOne.bind(this);
     this.invalidKeys = this.invalidKeys.bind(this);
@@ -133,9 +134,21 @@ export default class TypedValidator {
     return validationForFieldType(value);
   }
 
-  _createErrors(isValid, key, fieldType) {
+  _createErrorMessage(key, fieldType, isRequired) {
+    const customMessage = get(this.customMessages, key);
+    if (isRequired) {
+      return `${key} is required`;
+    }
+    if (!!customMessage) {
+      return customMessage;
+    }
+
+    return `${key} must be a ${get(fieldType, key)}`;
+  }
+
+  _createErrors(isValid, key, fieldType, required = false) {
     if (!isValid) {
-      const errorMessage = `${key} must be a ${get(fieldType, key)}`;
+      const errorMessage = this._createErrorMessage(key, fieldType, required);
       this.errors.push({
         key,
         errorMessage,
@@ -159,7 +172,7 @@ export default class TypedValidator {
 
     const fieldType = this._fieldTypeForValidation(key);
     const isValid = this._validateField(fieldValue, get(fieldType, key));
-    this._createErrors(isValid, key, fieldType);
+    this._createErrors(isValid, key, fieldType, isUndefined(fieldValue));
     return isValid;
   }
 
@@ -172,7 +185,7 @@ export default class TypedValidator {
     const missingKeys = difference(keys(expectedKeys), keys(obj));
     if (size(missingKeys) > 0) {
       each(missingKeys, (missingKey) => {
-        this._createErrors(false, missingKey, get(expectedKeys, missingKey));
+        this._createErrors(false, missingKey, get(expectedKeys, missingKey), true);
       });
       return false;
     }
