@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import TypedValidator from '../src';
-import { first } from 'lodash';
+import { first, isArray } from 'lodash';
 
 
 describe('Tests', function () {
@@ -37,6 +37,42 @@ describe('Tests', function () {
 
     expect(Validator.validateOne.bind(testObject)).to.throw();
   });
+  
+  it('validateOne - Should throw key provided is not in Type', function () {
+    const validateOneType = `
+      input ValidateOneType {
+        title: String    
+      }
+    `
+
+    const testObject = {
+      foobar: 'Yo!',
+    }
+
+    const Validator = new TypedValidator(validateOneType);
+
+    expect(Validator.validateOne.bind(testObject)).to.throw();
+  });
+
+  it('validate - Should return invalid for an object with missing keys', function () {
+    const validateAllType = `
+      input ValidateOneType {
+        title: String   
+        age: Int 
+      }
+    `
+
+    const testObject = {
+      title: 'Yo!',
+    }
+
+    const Validator = new TypedValidator(validateAllType);
+
+    expect(Validator.validate(testObject)).to.eql(false);
+    const invalidKeys = Validator.invalidKeys();
+    expect(invalidKeys.length).to.eql(1);
+
+  });
 
   it('validate - Object Type', function () {
     const validateOneType = `
@@ -72,6 +108,7 @@ describe('Tests', function () {
         email: EmailType
         subscribed: Boolean
         createdAt: DateType
+        phone: PhoneType
       }
     `
 
@@ -81,6 +118,7 @@ describe('Tests', function () {
       email: 'abhi@workpop.com',
       subscribed: false,
       createdAt: new Date(),
+      phone: '(909) 456-4319',
     }
 
     const Validator = new TypedValidator(validatingTypes);
@@ -95,6 +133,8 @@ describe('Tests', function () {
     expect(Validator.validateOne(testObject, 'subscribed')).to.eql(true);
     // Date
     expect(Validator.validateOne(testObject, 'createdAt')).to.eql(true);
+    // Phone
+    expect(Validator.validateOne(testObject, 'phone')).to.eql(true);
 
   });
 
@@ -114,6 +154,7 @@ describe('Tests', function () {
     // should be invalid
     expect(Validator.validate(testObject)).to.eql(false);
     const invalidKeys = Validator.invalidKeys();
+    expect(isArray(invalidKeys)).to.eql(true);
     expect(first(invalidKeys).key).to.eql('num');
     expect(invalidKeys.length).to.eql(1);
   });
@@ -145,4 +186,24 @@ describe('Tests', function () {
     expect(invalidKeys.length).to.eql(0);
   });
 
+  it('Clean - should clean object in place', function () {
+    const validatingTypes = `
+      input ValidatingTypes {    
+        num: String
+      }
+    `;
+
+    let testObject = {
+      num: '1',
+      foo: 'bar',
+    };
+
+    const Validator = new TypedValidator(validatingTypes);
+
+    Validator.clean(testObject)
+
+    expect(Validator.clean(testObject)).to.eql({
+      num: '1',
+    });
+  });
 });
