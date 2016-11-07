@@ -98,7 +98,7 @@ This method returns all the bound `Validator` methods. This is only needed if yo
 
 ## Examples
 
-1. Simple Example
+#### Simple Example
 
 ```js
 const exampleType = `
@@ -118,7 +118,7 @@ Validator.validateOne(testObject, 'title');
 // true
 ```
 
-2. `keyErrorMessage`
+#### `keyErrorMessage`
 
 ```js
 const validatingTypes = `
@@ -138,7 +138,7 @@ Validator.keyErrorMessage('num');
 // num must be a String
 ```
 
-3. Using ObjectTypeDefinitions
+#### Using ObjectTypeDefinitions
 
 ```js
 const validationWithObjectTypw = `
