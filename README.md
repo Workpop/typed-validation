@@ -22,6 +22,17 @@ Create a Validator Instance.
 const Validator = new TypedValidator(example);
 ```
 
+## Built-In Types
+
+`TypedValidator` supports these primitive types 
+
+`String`
+`Int`
+`Boolean`
+`EmailType`
+`DateType`
+`PhoneType`
+
 ## API
 
 ### `TypedValidator`
@@ -107,3 +118,49 @@ Validator.validateOne(testObject, 'title');
 // true
 ```
 
+2. `keyErrorMessage`
+
+```js
+const validatingTypes = `
+    input ValidatingTypes {    
+    num: String
+    }
+`;
+
+const testObject = {
+    num: 1,
+};
+
+const Validator = new TypedValidator(validatingTypes);
+Validator.validate(testObject);
+
+Validator.keyErrorMessage('num');
+// num must be a String
+```
+
+3. Using ObjectTypeDefinitions
+
+```js
+const validationWithObjectTypw = `
+    type User {
+        id: String
+        name: Int
+    }
+
+    input ValidateOneType {
+        title: User    
+    }
+`;
+
+
+const testObject = {
+      title: {
+        id: 'Yo!',
+        name: 1,
+      },
+};
+
+const Validator = new TypedValidator(validateOneType);
+const isValid = Validator.validate(testObject);
+// true
+```
