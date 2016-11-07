@@ -186,6 +186,24 @@ describe('Tests', function () {
     expect(invalidKeys.length).to.eql(0);
   });
 
+    it('Key Error Message - should be able to retrieve error message for specific key', function () {
+    const validatingTypes = `
+      input ValidatingTypes {    
+        num: String
+      }
+    `;
+
+    let testObject = {
+      num: 1,
+    };
+
+    const Validator = new TypedValidator(validatingTypes);
+
+    Validator.validate(testObject);
+  
+    expect(Validator.keyErrorMessage('num')).not.to.be.undefined;
+  });
+
   it('Clean - should clean object in place', function () {
     const validatingTypes = `
       input ValidatingTypes {    

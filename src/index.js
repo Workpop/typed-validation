@@ -9,6 +9,9 @@ export default class TypedValidator {
     this.validate = this.validate.bind(this);
     this.validateOne = this.validateOne.bind(this);
     this.invalidKeys = this.invalidKeys.bind(this);
+    this.keyErrorMessage = this.keyErrorMessage.bind(this);
+
+    // Initiate all types available to this Validator
     this._bootstrapTypes(this.definitions);
   }
 
@@ -132,7 +135,7 @@ export default class TypedValidator {
 
   _createErrors(isValid, key, fieldType) {
     if (!isValid) {
-      const errorMessage = `${key} must be a ${fieldType}`;
+      const errorMessage = `${key} must be a ${get(fieldType, key)}`;
       this.errors.push({
         key,
         errorMessage,
@@ -189,6 +192,12 @@ export default class TypedValidator {
 
   invalidKeys() {
     return this.errors;
+  }
+
+  keyErrorMessage(field) {
+    return chain(this.errors).find((msg) => {
+      return get(msg, 'key') === field;
+    }).get('errorMessage').value();
   }
 
   clean(obj) {
