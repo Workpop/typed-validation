@@ -213,6 +213,8 @@ export default class TypedValidator {
    * @private
    */
   _validateField(value: any, fieldType: string): boolean {
+    // clear errors before we validate
+    this._clearErrors();
     const validationForFieldType = this.validatorFunctions[fieldType];
 
     if (!validationForFieldType) {
@@ -261,6 +263,10 @@ export default class TypedValidator {
       });
     }
     return this.errors;
+  }
+
+  _clearErrors() {
+    this.errors = [];
   }
 
   /**
@@ -355,7 +361,6 @@ export default class TypedValidator {
       if (!cleanedObj[key]) {
         delete obj[key];
       }
-      obj[key] = cleanedObj[key];
     });
     return obj;
   }

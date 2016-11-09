@@ -182,7 +182,7 @@ describe('Tests', function () {
     expect(Validator.validate(testObject)).to.eql(false);
     const invalidKeys = Validator.invalidKeys();
     expect(isArray(invalidKeys)).to.eql(true);
-    expect(first(invalidKeys).key).to.eql('num');
+    expect(first(invalidKeys).name).to.eql('num');
     expect(invalidKeys.length).to.eql(1);
   });
 
@@ -206,7 +206,7 @@ describe('Tests', function () {
     // should be invalid
     expect(Validator.validate(testObject)).to.eql(false);
     let invalidKeys = Validator.invalidKeys();
-    expect(first(invalidKeys).key).to.eql('num');
+    expect(first(invalidKeys).name).to.eql('num');
     expect(invalidKeys.length).to.eql(1);
     expect(Validator.validate(correctType)).to.eql(true);
     invalidKeys = Validator.invalidKeys();
