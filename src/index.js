@@ -1,8 +1,26 @@
+// @flow
+
 import gql from 'graphql-tag';
 import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isUndefined, isDate, isBoolean, pickBy } from 'lodash';
 
+type ErrorType = {
+  name: string,
+  type: string,
+};
+
 export default class TypedValidator {
-  constructor(type, options) {
+  type: any;
+  errors: Array<ErrorType>;
+  customMessages: Object;
+  validatorFunctions: Object;
+  validatorTypes: Object;
+  definitions: Array<Object>;
+  keyErrorMessage: Function;
+  invalidKeys: Function;
+  validate: Function;
+  validateOne: Function;
+
+  constructor(type: string, options: Object) {
     this.type = gql`${type}`;
     this.definitions = get(this.type, 'definitions');
     this.errors = [];
@@ -16,7 +34,13 @@ export default class TypedValidator {
     this._bootstrapTypes(this.definitions);
   }
 
-  _isEmail(sample) {
+  /**
+   * Validate the value(String) is an Email
+   * @param sample
+   * @returns {boolean}
+   * @private
+   */
+  _isEmail(sample: string): boolean {
     if (!sample) {
       return false;
     }
@@ -24,7 +48,13 @@ export default class TypedValidator {
     return regex.test(sample);
   }
 
-  _isTel(sample) {
+  /**
+   * Validate the value(String) is a Phone Number
+   * @param sample
+   * @returns {boolean}
+   * @private
+   */
+  _isTel(sample: string): boolean {
     if (!sample) {
       return false;
     }
@@ -33,19 +63,38 @@ export default class TypedValidator {
     return !!res;
   }
 
-  _setValidatorType(setType, setFns) {
+  /**
+   * Set Type Defs and Type Resolvers to the base collection
+   * @param setType
+   * @param setFns
+   * @private
+   */
+  _setValidatorType(setType: Object, setFns: Object) {
     this.validatorTypes = setType;
     this.validatorFunctions = setFns;
     return;
   }
 
-  _addValidatorTypes(addedType, addedFuncs) {
+  /**
+   * Add Validator Types and Functions to the Base collection of type defs/ type resolvers
+   * @param addedType
+   * @param addedFuncs
+   * @returns {*}
+   * @private
+   */
+  _addValidatorTypes(addedType: Object, addedFuncs: Object): void {
     const typesToAdd = Object.assign({}, this.validatorTypes, addedType);
     const funcsToAdd = Object.assign({}, this.validatorFunctions, addedFuncs);
     return this._setValidatorType(typesToAdd, funcsToAdd);
   }
 
-  _bootstrapTypes(definitions) {
+  /**
+   * When the Validator is instantiated, bootstrap all Type Definitions and Type Resolvers (validation functions)
+   * @param definitions
+   * @returns {*}
+   * @private
+   */
+  _bootstrapTypes(definitions: Array<Object>) {
     this.validatorTypes = {
       string: 'String',
       int: 'Int',
@@ -64,14 +113,14 @@ export default class TypedValidator {
       [this.validatorTypes.telephone]: this._isTel,
     };
 
-    return each(definitions, (item) => {
+    each(definitions, (item: Object): void => {
       const FIELDS = item.fields;
       if (item.kind === 'ObjectTypeDefinition') {
         const namedType = item.name.value;
         return this._addValidatorTypes({
           [namedType]: this._getTypeFields(FIELDS),
         }, {
-          [namedType]: (obj) => {
+          [namedType]: (obj: Object): boolean => {
             return this.validate(obj, {
               namedType,
             });
@@ -81,8 +130,14 @@ export default class TypedValidator {
     });
   }
 
-  _getTypeFields(fields = []) {
-    return reduce(fields, (memo, fieldObj) => {
+  /**
+   * Transform the fields AST into a digestable type structure
+   * @param fields
+   * @returns {*}
+   * @private
+   */
+  _getTypeFields(fields: Array<Object> = []): Object {
+    return reduce(fields, (memo: Object, fieldObj: Object): Object => {
       const field = get(fieldObj, 'name.value');
       const type = get(fieldObj, 'type.name.value');
       const typeObj = {
@@ -92,49 +147,90 @@ export default class TypedValidator {
     }, {});
   }
 
-  _fieldTypeForValidation(key) {
-    return reduce(this.definitions, (memo, currentVal) => {
+  /**
+   * For all definitions, find the fieldType validation for a given key
+   * @param key
+   * @returns {*}
+   * @private
+   */
+  _fieldTypeForValidation(key: string): Object {
+    return reduce(this.definitions, (memo: Object, currentVal: Object): Object => {
       const fields = get(currentVal, 'fields');
-      const fieldType = pick(this._getTypeFields(fields), key);
+      const fieldType = pick(this._getTypeFields(fields), [key]);
       if (fieldType) {
         return Object.assign({}, memo, fieldType);
       }
+      return Object.assign({}, memo);
     }, {});
   }
 
-  _isObjectTypeDefinition(kind) {
+  /**
+   * Check if the "Document" kind is ObjectTypeDefinition
+   * @param kind
+   * @returns {boolean}
+   * @private
+   */
+  _isObjectTypeDefinition(kind: string): boolean {
     return kind === 'ObjectTypeDefinition';
   }
-
-  _isInputObjectTypeDefinition(kind) {
+  /**
+   * Check if the "Document" kind is InputObjectTypeDefinition
+   * @param kind
+   * @returns {boolean}
+   * @private
+   */
+  _isInputObjectTypeDefinition(kind: string): boolean {
     return kind === 'InputObjectTypeDefinition';
   }
 
-  _expectedFieldKeys(namedType) {
-    return chain(this.definitions).filter((item) => {
+  /**
+   * Return this expected schema fields for ObjectTypes and InputObjectTypes
+   * @param namedType
+   * @returns {*}
+   * @private
+   */
+  _expectedFieldKeys(namedType: string): Object {
+    // filter schema by definition Kind
+    return chain(this.definitions).filter((item: Object): boolean => {
       const kind = get(item, 'kind');
       if (namedType) {
         return this._isObjectTypeDefinition(kind);
       }
       return this._isInputObjectTypeDefinition(kind);
-    }).reduce((memo, currentVal) => {
+    }).reduce((memo: Object, currentVal: Object): Object => {
+      // get the typeFields for the fields in schema
       const fields = get(currentVal, 'fields');
       const fieldType = this._getTypeFields(fields);
-      return Object.assign({}, {}, fieldType);
+      return Object.assign({}, memo, fieldType);
     }, {}).value();
   }
 
-  _validateField(value, fieldType) {
+  /**
+   * Validate the value by its given fieldType validator function
+   * @param value
+   * @param fieldType
+   * @returns {*}
+   * @private
+   */
+  _validateField(value: any, fieldType: string): boolean {
     const validationForFieldType = this.validatorFunctions[fieldType];
 
     if (!validationForFieldType) {
-      throw new Error(`Do not have defined validator for given type. ${fieldType}`);
+      throw new Error(`You do not have defined validator for given type. ${fieldType}`);
     }
 
     return validationForFieldType(value);
   }
 
-  _createErrorMessage(key, fieldType, isRequired) {
+  /**
+   * Create error message for a given invalid key
+   * @param key
+   * @param fieldType
+   * @param isRequired
+   * @returns {*}
+   * @private
+   */
+  _createErrorMessage(key: string, fieldType: Object, isRequired: boolean): string {
     const customMessage = get(this.customMessages, key);
     if (isRequired) {
       return `${key} is required`;
@@ -146,26 +242,44 @@ export default class TypedValidator {
     return `${key} must be a ${get(fieldType, key)}`;
   }
 
-  _createErrors(isValid, key, fieldType, required = false) {
+  /**
+   * Create error objects per invalid field
+   * @param isValid
+   * @param key
+   * @param fieldType
+   * @param required
+   * @returns {Array}
+   * @private
+   */
+  _createErrors(isValid: boolean, key: string, fieldType: Object, required: boolean = false): Array<ErrorType> {
     if (!isValid) {
+      // create the error message
       const errorMessage = this._createErrorMessage(key, fieldType, required);
       this.errors.push({
-        key,
-        errorMessage,
+        name: key,
+        type: errorMessage,
       });
-    } else {
-      this.errors = [];
     }
     return this.errors;
   }
 
-  newContext() {
+  /**
+   * Create a SimpleSchema-esque context object. Primarily used for legacy SS implementations that are being migrated
+   * @returns {TypedValidator}
+   */
+  newContext(): Object {
     return this;
   }
 
-  validateOne(obj, key) {
+  /**
+   * Validate one key in an object
+   * @param obj
+   * @param key
+   * @returns {boolean}
+   */
+  validateOne(obj: Object, key: string): boolean {
     if (!key) {
-      throw new Error('Must provided key to validate against');
+      throw new Error('Must provide key to validate against');
     }
 
     const fieldValue = get(obj, key);
@@ -176,50 +290,70 @@ export default class TypedValidator {
     return isValid;
   }
 
-
-  validate(obj, options = {}) {
+  /**
+   * Validate all keys in an object
+   * @param obj
+   * @param options
+   * @returns {boolean}
+   */
+  validate(obj: Object, options: Object = {}): boolean {
     let isValid = true;
 
     const namedType = get(options, 'namedType');
     const expectedKeys = this._expectedFieldKeys(namedType);
     const missingKeys = difference(keys(expectedKeys), keys(obj));
     if (size(missingKeys) > 0) {
-      each(missingKeys, (missingKey) => {
-        this._createErrors(false, missingKey, get(expectedKeys, missingKey), true);
+      each(missingKeys, (missingKey: string): Array<ErrorType> => {
+        return this._createErrors(false, missingKey, get(expectedKeys, missingKey), true);
       });
       return false;
     }
 
-    each(obj, (value, key) => {
+    each(obj, (value: any, key: string): Array<ErrorType> => {
       const fieldType = this._fieldTypeForValidation(key);
       isValid = this._validateField(value, get(fieldType, key));
-      this._createErrors(isValid, key, fieldType);
+      return this._createErrors(isValid, key, fieldType);
     });
 
     return isValid;
   }
 
-  invalidKeys() {
+  /**
+   * Grab all current invalid keys
+   * @returns {Array}
+   */
+  invalidKeys(): Array<ErrorType> {
     return this.errors;
   }
 
-  keyErrorMessage(field) {
-    return chain(this.errors).find((msg) => {
-      return get(msg, 'key') === field;
-    }).get('errorMessage').value();
+  /**
+   * Grab Error message for particular key
+   * @param field
+   * @returns {*}
+   */
+  keyErrorMessage(field: string): string {
+    return chain(this.errors).find((msg: Object): boolean => {
+      return get(msg, 'name') === field;
+    }).get('type').value();
   }
 
-  clean(obj) {
-    const cleanedObj = pickBy(obj, (value, key) => {
+  /**
+   * Clean the object. Filter any fields not in the current schema
+   * @param obj
+   * @returns {*}
+   */
+  clean(obj: Object): Object {
+    const cleanedObj = pickBy(obj, (value: any, key: string): boolean => {
       const fieldType = this._fieldTypeForValidation(key);
       if (chain(fieldType).keys().size() > 0) {
-        return this._validateField(value, get(fieldType, key));
+        return true;
       }
+      return false;
     });
 
-    each(obj, (value, key) => {
+    each(obj, (value: any, key: string) => {
       if (!cleanedObj[key]) {
-        return delete obj[key];
+        delete obj[key];
       }
       obj[key] = cleanedObj[key];
     });
