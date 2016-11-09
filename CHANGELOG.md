@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/Workpop/typed-validation/compare/v0.1.0...v0.1.1) (2016-11-09)
+
+
+### Bug Fixes
+
+* **tests:** Fix, and document features ([e712e2d](https://github.com/Workpop/typed-validation/commit/e712e2d))
+
+
+
 <a name="0.1.0"></a>
 # [0.1.0](https://github.com/Workpop/typed-validation/compare/v0.0.2...v0.1.0) (2016-11-07)
 
