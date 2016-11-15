@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.5"></a>
+## [0.1.5](https://github.com/Workpop/typed-validation/compare/v0.1.4...v0.1.5) (2016-11-15)
+
+
+### Bug Fixes
+
+* **clean:** bind clean to validator instance ([2272a1d](https://github.com/Workpop/typed-validation/commit/2272a1d))
+* **tests:** add a test for cleaning from new context ([4b3d348](https://github.com/Workpop/typed-validation/commit/4b3d348))
+
+
+
 <a name="0.1.4"></a>
 ## [0.1.4](https://github.com/Workpop/typed-validation/compare/v0.1.3...v0.1.4) (2016-11-15)
 
