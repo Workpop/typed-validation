@@ -246,7 +246,30 @@ describe('Tests', function () {
     const Validator = new TypedValidator(validatingTypes);
 
     Validator.clean(testObject);
-    
+
+    expect(testObject).to.eql({
+      num: '1',
+    });
+  });
+
+  it('Clean - should be able to clean from newContext', function () {
+    const validatingTypes = `
+      input ValidatingTypes {    
+        num: String
+      }
+    `;
+
+    const Validator = new TypedValidator(validatingTypes);
+
+    const context = Validator.newContext();
+
+    const testObject = {
+      num: '1',
+      foo: 'bar',
+    };
+
+    context.clean(testObject);
+
     expect(testObject).to.eql({
       num: '1',
     });
