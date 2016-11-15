@@ -36,6 +36,7 @@ export default class TypedValidator {
   invalidKeys: Function;
   validate: Function;
   validateOne: Function;
+  clean: Function;
 
   constructor(type: string, options: Object) {
     this.type = gql`${type}`;
@@ -46,7 +47,7 @@ export default class TypedValidator {
     this.validateOne = this.validateOne.bind(this);
     this.invalidKeys = this.invalidKeys.bind(this);
     this.keyErrorMessage = this.keyErrorMessage.bind(this);
-
+    this.clean = this.clean.bind(this);
     // Initiate all types available to this Validator
     this._bootstrapTypes(this.definitions);
   }
