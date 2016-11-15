@@ -1,7 +1,25 @@
 // @flow
 
 import gql from 'graphql-tag';
-import { get, each, keys, size, difference, chain, isString, isNumber, pick, reduce, isUndefined, isDate, isBoolean, pickBy } from 'lodash';
+import {
+  get,
+  isEmpty,
+  filter,
+  each,
+  keys,
+  size,
+  difference,
+  flow,
+  find,
+  isString,
+  isNumber,
+  pick,
+  reduce,
+  isUndefined,
+  isDate,
+  isBoolean,
+  pickBy,
+} from 'lodash';
 
 type ErrorType = {
   name: string,
@@ -173,6 +191,7 @@ export default class TypedValidator {
   _isObjectTypeDefinition(kind: string): boolean {
     return kind === 'ObjectTypeDefinition';
   }
+
   /**
    * Check if the "Document" kind is InputObjectTypeDefinition
    * @param kind
@@ -191,18 +210,20 @@ export default class TypedValidator {
    */
   _expectedFieldKeys(namedType: string): Object {
     // filter schema by definition Kind
-    return chain(this.definitions).filter((item: Object): boolean => {
+    const defintions = filter(this.definitions, (item: Object): boolean => {
       const kind = get(item, 'kind');
       if (namedType) {
         return this._isObjectTypeDefinition(kind);
       }
       return this._isInputObjectTypeDefinition(kind);
-    }).reduce((memo: Object, currentVal: Object): Object => {
+    });
+
+    return reduce(defintions, (memo: Object, currentVal: Object): Object => {
       // get the typeFields for the fields in schema
       const fields = get(currentVal, 'fields');
       const fieldType = this._getTypeFields(fields);
       return Object.assign({}, memo, fieldType);
-    }, {}).value();
+    }, {});
   }
 
   /**
@@ -338,9 +359,14 @@ export default class TypedValidator {
    * @returns {*}
    */
   keyErrorMessage(field: string): string {
-    return chain(this.errors).find((msg: Object): boolean => {
-      return get(msg, 'name') === field;
-    }).get('type').value();
+    return flow(
+      find((msg: Object): boolean => {
+        return get(msg, 'name') === field;
+      }),
+      (item: Object): string => {
+        return get(item, 'type');
+      }
+    )(this.errors);
   }
 
   /**
@@ -351,7 +377,7 @@ export default class TypedValidator {
   clean(obj: Object): Object {
     const cleanedObj = pickBy(obj, (value: any, key: string): boolean => {
       const fieldType = this._fieldTypeForValidation(key);
-      if (chain(fieldType).keys().size() > 0) {
+      if (isEmpty(fieldType)) {
         return true;
       }
       return false;
