@@ -9,7 +9,6 @@ import {
   keys,
   size,
   difference,
-  flow,
   find,
   isString,
   isNumber,
@@ -359,14 +358,10 @@ export default class TypedValidator {
    * @returns {*}
    */
   keyErrorMessage(field: string): string {
-    return flow(
-      find((msg: Object): boolean => {
-        return get(msg, 'name') === field;
-      }),
-      (item: Object): string => {
-        return get(item, 'type');
-      }
-    )(this.errors);
+    const message = find(this.errors, (msg: Object): boolean => {
+      return get(msg, 'name') === field;
+    });
+    return get(message, 'type');
   }
 
   /**
@@ -377,7 +372,7 @@ export default class TypedValidator {
   clean(obj: Object): Object {
     const cleanedObj = pickBy(obj, (value: any, key: string): boolean => {
       const fieldType = this._fieldTypeForValidation(key);
-      if (isEmpty(fieldType)) {
+      if (!isEmpty(fieldType)) {
         return true;
       }
       return false;

@@ -246,8 +246,8 @@ describe('Tests', function () {
     const Validator = new TypedValidator(validatingTypes);
 
     Validator.clean(testObject);
-
-    expect(Validator.clean(testObject)).to.eql({
+    
+    expect(testObject).to.eql({
       num: '1',
     });
   });
