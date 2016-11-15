@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.2"></a>
+## [0.1.2](https://github.com/Workpop/typed-validation/compare/v0.1.1...v0.1.2) (2016-11-15)
+
+
+### Bug Fixes
+
+* **lodash:** optimize module for lodash ([25742ef](https://github.com/Workpop/typed-validation/commit/25742ef))
+
+
+
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/Workpop/typed-validation/compare/v0.1.0...v0.1.1) (2016-11-09)
 
