@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.7"></a>
+## [0.1.7](https://github.com/Workpop/typed-validation/compare/v0.1.6...v0.1.7) (2016-12-18)
+
+
+### Bug Fixes
+
+* **lodash:** peer dep (#6) ([079b618](https://github.com/Workpop/typed-validation/commit/079b618))
+* **package:** update graphql-tag to version 1.0.0 ([027d4c9](https://github.com/Workpop/typed-validation/commit/027d4c9))
+
+
+
 <a name="0.1.6"></a>
 ## [0.1.6](https://github.com/Workpop/typed-validation/compare/v0.1.5...v0.1.6) (2016-11-15)
 
