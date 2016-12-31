@@ -41,7 +41,7 @@
     "graphql-tag": "^0.1.16"
   },
   "peerDependencies": {
-    "lodash": "4.x.x"
+    "lodash": "^4.17.4"
   },
   "pre-commit": [
     "lint",
