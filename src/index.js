@@ -382,6 +382,9 @@ export default class TypedValidator {
     });
 
     each(obj, (value: any, key: string) => {
+      if (isString(value)) {
+        obj[key] = value.trim();
+      }
       if (!cleanedObj[key]) {
         delete obj[key];
       }
