@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.8"></a>
+## [0.1.8](https://github.com/Workpop/typed-validation/compare/v0.1.7...v0.1.8) (2017-02-14)
+
+
+### Bug Fixes
+
+* **clean:** trim string fields automatically ([83aa1eb](https://github.com/Workpop/typed-validation/commit/83aa1eb))
+* **package:** update graphql-tag to version 1.2.3 (#9) ([679f3d1](https://github.com/Workpop/typed-validation/commit/679f3d1)), closes [#8](https://github.com/Workpop/typed-validation/issues/8)
+
+
+
 <a name="0.1.7"></a>
 ## [0.1.7](https://github.com/Workpop/typed-validation/compare/v0.1.6...v0.1.7) (2016-12-18)
 
